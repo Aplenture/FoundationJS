@@ -5,7 +5,7 @@ import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
 
 export class Commander {
-    public static readonly onMessage = new Event<Commander, string>();
+    public readonly onMessage = new Event<Commander, string>();
 
     private readonly _commands: NodeJS.Dict<Singleton<Command<any, any>>> = {};
 
@@ -19,7 +19,7 @@ export class Commander {
 
         command = command.toLowerCase();
 
-        Commander.onMessage.emit(this, "commander << " + commandLine);
+        this.onMessage.emit(this, "commander << " + commandLine);
 
         if (!this._commands[command])
             throw new Error(`Unknown command '${command}'. Type 'help' for help.`);
@@ -31,11 +31,11 @@ export class Commander {
             const result = await instance.execute(args);
             stopwatch.stop();
 
-            Commander.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
+            this.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
 
             return result as TRes;
         } catch (error) {
-            Commander.onMessage.emit(this, `commander >> ${commandLine} >> ${error.stack}`);
+            this.onMessage.emit(this, `commander >> ${commandLine} >> ${error.stack}`);
 
             throw error;
         }
