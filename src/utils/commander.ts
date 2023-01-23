@@ -41,7 +41,11 @@ export class Commander<TCommand extends Command<any, any>> {
         }
     }
 
-    public hasCommand<TArgs, TRes>(name: string): boolean {
+    public hasCommand(name: string): boolean {
         return !!this._commands[name.toLowerCase()];
+    }
+
+    public getCommand<T extends TCommand>(name: string): T {
+        return this._commands[name.toLowerCase()].instance as T;
     }
 }
