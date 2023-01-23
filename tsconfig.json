@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "rootDir": "./src",
+        "outDir": "dist",
+        "sourceMap": true,
+        "target": "es2020",
+        "moduleResolution": "node",
+        "resolveJsonModule": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "tests",
+        "**/*.spec.ts"
+    ]
+}
