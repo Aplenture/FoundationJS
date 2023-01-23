@@ -4,9 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "identifier": "test",
+            "identifier": "build",
             "type": "npm",
-            "script": "test",
+            "script": "build",
             "problemMatcher": [
                 "$tsc"
             ],

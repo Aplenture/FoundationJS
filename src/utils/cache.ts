@@ -1,4 +1,4 @@
-import { parseToJSON } from "../utils/text";
+import { parseToJSON } from "../other/text";
 
 export class Cache {
     private _changed = false;
