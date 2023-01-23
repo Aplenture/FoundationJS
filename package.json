@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "description": "",
     "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "directories": {
         "test": "tests"
     },
@@ -21,7 +22,6 @@
         "url": "https://github.com/Aplenture/FoundationJS/issues"
     },
     "homepage": "https://github.com/Aplenture/FoundationJS#readme",
-    "types": "dist/*.js.map",
     "devDependencies": {
         "@types/chai": "^4.3.4",
         "@types/chai-as-promised": "^7.1.5",
