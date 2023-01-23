@@ -4,16 +4,16 @@ import { Event } from "./event";
 import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
 
-export class Commander<TArgs, TRes> {
-    public readonly onMessage = new Event<Commander<TArgs, TRes>, string>();
+export class Commander<TCommand extends Command<any, any>> {
+    public readonly onMessage = new Event<Commander<TCommand>, string>();
 
-    private readonly _commands: NodeJS.Dict<Singleton<Command<TArgs, TRes>>> = {};
+    private readonly _commands: NodeJS.Dict<Singleton<TCommand>> = {};
 
-    public add(command: string, singleton: Singleton<Command<TArgs, TRes>>) {
+    public add(command: string, singleton: Singleton<TCommand>) {
         this._commands[command.toLowerCase()] = singleton;
     }
 
-    public async execute<TArgs2 extends TArgs, TRes2 extends TRes>(command: string, args: TArgs2): Promise<TRes2> {
+    public async execute<TArgs, TRes>(command: string, args: TArgs): Promise<TRes> {
         const commandLine = `${command} ${Object.keys(args).map(key => `--${key} ${args[key]}`).join(' ')}`;
         const stopwatch = new Stopwatch();
 
@@ -33,7 +33,7 @@ export class Commander<TArgs, TRes> {
 
             this.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
 
-            return result as TRes2;
+            return result as TRes;
         } catch (error) {
             this.onMessage.emit(this, `commander >> ${commandLine} >> ${error.stack}`);
 
