@@ -5,14 +5,18 @@ import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
 import { Help } from "../commands";
 
+export const COMMAND_HELP = 'help';
+
 export class Commander {
     public readonly onMessage = new Event<Commander, string>();
 
     private readonly _commands: NodeJS.Dict<Singleton<Command<any, any, any>>> = {};
 
     constructor() {
-        this.addCommand('help', new Singleton(() => new Help({ commands: this._commands })));
+        this.addCommand(COMMAND_HELP, new Singleton(() => new Help({ commands: this._commands })));
     }
+
+    protected get commands(): NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>> { return this._commands; }
 
     public addCommand(command: string, singleton: Singleton<Command<any, any, any>>) {
         this._commands[command.toLowerCase()] = singleton;
@@ -31,7 +35,7 @@ export class Commander {
         this.onMessage.emit(this, "commander << " + commandLine);
 
         if (!this._commands[command])
-            throw new Error(`Unknown command '${command}'. Type 'help' for help.`);
+            throw new Error(`Unknown command '${command}'. Type '${COMMAND_HELP}' for help.`);
 
         const instance = this._commands[command].instance;
 
@@ -54,7 +58,7 @@ export class Commander {
         return !!this._commands[name.toLowerCase()];
     }
 
-    public getCommand<T extends Command<any, any, any>>(name: string): T {
+    protected getCommand<T extends Command<any, any, any>>(name: string): T {
         return this._commands[name.toLowerCase()].instance as T;
     }
 }
