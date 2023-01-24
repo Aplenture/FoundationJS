@@ -7,13 +7,13 @@ import { formatDuration } from "../other";
 export class Commander {
     public readonly onMessage = new Event<Commander, string>();
 
-    private readonly _commands: NodeJS.Dict<Singleton<Command<any, any>>> = {};
+    private readonly _commands: NodeJS.Dict<Singleton<Command<any, any, any>>> = {};
 
-    public addCommand(command: string, singleton: Singleton<Command<any, any>>) {
+    public addCommand(command: string, singleton: Singleton<Command<any, any, any>>) {
         this._commands[command.toLowerCase()] = singleton;
     }
 
-    public addCommands(commands: NodeJS.ReadOnlyDict<Singleton<Command<any, any>>>) {
+    public addCommands(commands: NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>>) {
         Object.keys(commands).forEach(command => this.addCommand(command, commands[command]));
     }
 
@@ -49,7 +49,7 @@ export class Commander {
         return !!this._commands[name.toLowerCase()];
     }
 
-    public getCommand<T extends Command<any, any>>(name: string): T {
+    public getCommand<T extends Command<any, any, any>>(name: string): T {
         return this._commands[name.toLowerCase()].instance as T;
     }
 }
