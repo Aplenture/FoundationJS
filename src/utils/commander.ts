@@ -26,9 +26,11 @@ export class Commander {
         Object.keys(commands).forEach(command => this.addCommand(command, commands[command]));
     }
 
-    public async execute<TArgs, TRes>(command: string, args: TArgs): Promise<TRes> {
-        const commandLine = `${command} ${Object.keys(args).map(key => `--${key} ${args[key]}`).join(' ')}`;
+    public async execute<TArgs, TRes>(command: string, args?: TArgs): Promise<TRes> {
         const stopwatch = new Stopwatch();
+        const commandLine = undefined === args
+            ? command
+            : `${command} ${Object.keys(args).map(key => `--${key} ${args[key]}`).join(' ')}`;
 
         command = command.toLowerCase();
 
@@ -40,7 +42,7 @@ export class Commander {
         const instance = this._commands[command].instance;
 
         try {
-            if (instance.property)
+            if (instance.property && undefined !== args)
                 args = instance.property.parse(args);
 
             stopwatch.start();

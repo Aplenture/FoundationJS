@@ -7,11 +7,11 @@ interface Context {
 
 export class Help extends Command<Context, string, string> {
     public readonly description = "Lists all commands.";
-    public readonly property = new StringProperty("command", "Filters commands by name.");
+    public readonly property = new StringProperty("command", "Type <command name> to get detailed help for specific command.");
 
     public async execute(filter: string): Promise<string> {
         const commands = Object.keys(this.context.commands)
-            .filter(command => filter && command.includes(filter))
+            .filter(command => !filter || command.includes(filter))
             .sort((a, b) => a.localeCompare(b));
 
         const maxCommandNameLength = Math.max(...commands.map(command => command.length));
