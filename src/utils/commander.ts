@@ -9,8 +9,12 @@ export class Commander {
 
     private readonly _commands: NodeJS.Dict<Singleton<Command<any, any>>> = {};
 
-    public add(command: string, singleton: Singleton<Command<any, any>>) {
+    public addCommand(command: string, singleton: Singleton<Command<any, any>>) {
         this._commands[command.toLowerCase()] = singleton;
+    }
+
+    public addCommands(commands: NodeJS.ReadOnlyDict<Singleton<Command<any, any>>>) {
+        Object.keys(commands).forEach(command => this.addCommand(command, commands[command]));
     }
 
     public async execute<TArgs, TRes>(command: string, args: TArgs): Promise<TRes> {
