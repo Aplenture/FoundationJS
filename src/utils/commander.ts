@@ -4,12 +4,12 @@ import { Event } from "./event";
 import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
 
-export class Commander<TCommand extends Command<any, any>> {
-    public readonly onMessage = new Event<Commander<TCommand>, string>();
+export class Commander {
+    public readonly onMessage = new Event<Commander, string>();
 
-    private readonly _commands: NodeJS.Dict<Singleton<TCommand>> = {};
+    private readonly _commands: NodeJS.Dict<Singleton<Command<any, any>>> = {};
 
-    public add(command: string, singleton: Singleton<TCommand>) {
+    public add(command: string, singleton: Singleton<Command<any, any>>) {
         this._commands[command.toLowerCase()] = singleton;
     }
 
@@ -45,7 +45,7 @@ export class Commander<TCommand extends Command<any, any>> {
         return !!this._commands[name.toLowerCase()];
     }
 
-    public getCommand<T extends TCommand>(name: string): T {
+    public getCommand<T extends Command<any, any>>(name: string): T {
         return this._commands[name.toLowerCase()].instance as T;
     }
 }
