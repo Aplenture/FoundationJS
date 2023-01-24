@@ -40,8 +40,11 @@ export class Commander {
         const instance = this._commands[command].instance;
 
         try {
+            if (instance.property)
+                args = instance.property.parse(args);
+
             stopwatch.start();
-            const result = await instance.execute(instance.property.parse(args));
+            const result = await instance.execute(args);
             stopwatch.stop();
 
             this.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
