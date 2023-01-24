@@ -3,11 +3,16 @@ import { Command } from "./command";
 import { Event } from "./event";
 import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
+import { Help } from "../commands";
 
 export class Commander {
     public readonly onMessage = new Event<Commander, string>();
 
     private readonly _commands: NodeJS.Dict<Singleton<Command<any, any, any>>> = {};
+
+    constructor() {
+        this.addCommand('help', new Singleton(() => new Help({ commands: this._commands })));
+    }
 
     public addCommand(command: string, singleton: Singleton<Command<any, any, any>>) {
         this._commands[command.toLowerCase()] = singleton;
@@ -32,7 +37,7 @@ export class Commander {
 
         try {
             stopwatch.start();
-            const result = await instance.execute(args);
+            const result = await instance.execute(instance.property.parse(args));
             stopwatch.stop();
 
             this.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
