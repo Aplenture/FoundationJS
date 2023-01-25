@@ -1,4 +1,6 @@
 export interface Stack<T> {
-    push(element: T);
+    readonly count: number;
+
+    push(element: T): number;
     pop(): T;
 }
