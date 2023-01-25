@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { Commander } from "../src/utils/commander";
 
-describe("Commander", async () => {
+describe("Commander", () => {
     const commander = new Commander();
 
     describe("Help", () => {
