@@ -1,4 +1,4 @@
 export interface Message {
-    readonly title: string;
+    readonly title?: string;
     readonly text: string;
 }
