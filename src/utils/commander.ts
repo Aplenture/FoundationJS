@@ -8,22 +8,18 @@ import { Help } from "../commands";
 export const COMMAND_HELP = 'help';
 
 export class Commander {
-    public readonly onMessage = new Event<Commander, string>();
+    public static readonly onMessage = new Event<Commander, string>();
 
     private readonly _commands: NodeJS.Dict<Singleton<Command<any, any, any>>> = {};
 
     constructor() {
-        this.addCommand(COMMAND_HELP, new Singleton(() => new Help({ commands: this._commands })));
+        this.addCommand(COMMAND_HELP, Help, { commands: this._commands });
     }
 
     protected get commands(): NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>> { return this._commands; }
 
-    public addCommand(command: string, singleton: Singleton<Command<any, any, any>>) {
-        this._commands[command.toLowerCase()] = singleton;
-    }
-
-    public addCommands(commands: NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>>) {
-        Object.keys(commands).forEach(command => this.addCommand(command, commands[command]));
+    public addCommand<TContext, TArgs, TRes>(command: string, _constructor: new (...args: any[]) => Command<TContext, TArgs, TRes>, ...args: any[]) {
+        this._commands[command.toLowerCase()] = new Singleton(_constructor, ...args);
     }
 
     public async execute<TArgs, TRes>(command: string, args?: TArgs): Promise<TRes> {
@@ -34,7 +30,7 @@ export class Commander {
 
         command = command.toLowerCase();
 
-        this.onMessage.emit(this, "commander << " + commandLine);
+        Commander.onMessage.emit(this, "commander << " + commandLine);
 
         if (!this._commands[command])
             throw new Error(`Unknown command '${command}'. Type '${COMMAND_HELP}' for help.`);
@@ -49,11 +45,11 @@ export class Commander {
             const result = await instance.execute(args);
             stopwatch.stop();
 
-            this.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
+            Commander.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
 
             return result as TRes;
         } catch (error) {
-            this.onMessage.emit(this, `commander >> ${commandLine} >> ${error.stack}`);
+            Commander.onMessage.emit(this, `commander >> ${commandLine} >> ${error.stack}`);
 
             throw error;
         }
