@@ -1,20 +1,26 @@
 export type EventHandler<TSender, TArgs> = (input: TArgs, sender: TSender) => void;
 
+interface Listener<TSender, TArgs> extends Options<TSender, TArgs> {
+    readonly handler: EventHandler<TSender, TArgs>;
+    off?: boolean;
+}
+
+interface Options<TSender, TArgs> {
+    readonly sender?: TSender,
+    readonly args?: TArgs,
+    readonly once?: boolean
+}
+
 export class Event<TSender, TArgs> {
-    private listeners: {
-        readonly handler: EventHandler<TSender, TArgs>;
-        readonly sender: TSender;
-        readonly once: boolean;
-        off?: boolean;
-    }[] = [];
+    private listeners: Listener<TSender, TArgs>[] = [];
 
     public get length(): number { return this.listeners.length; }
 
-    public on(handler: EventHandler<TSender, TArgs>, sender?: TSender, once = false): void {
+    public on(handler: EventHandler<TSender, TArgs>, options: Options<TSender, TArgs> = {}): void {
         if (this.listeners.find(listener => listener.handler == handler))
             return;
 
-        this.listeners.push({ handler, sender, once });
+        this.listeners.push(Object.assign({ handler }, options));
     }
 
     public off(handler: EventHandler<TSender, TArgs>): void {
@@ -27,15 +33,23 @@ export class Event<TSender, TArgs> {
     }
 
     public once(handler: EventHandler<TSender, TArgs>, sender?: TSender): void {
-        this.on(handler, sender, true);
+        this.on(handler, { sender, once: true });
     }
 
     public emit(sender: TSender, args: TArgs): void {
-        this.listeners.forEach(listener => !listener.off && (!listener.sender || sender == listener.sender) && listener.handler(args, sender));
-        this.listeners = this.listeners.filter(listener => !listener.once && !listener.off);
-    }
+        this.listeners.forEach(listener => {
+            if (listener.off)
+                return;
 
-    public removeAllListeners() {
-        this.listeners = [];
+            if (undefined != listener.sender && sender != listener.sender)
+                return;
+
+            if (undefined != listener.args && args != listener.args)
+                return;
+
+            listener.handler(args, sender);
+        });
+
+        this.listeners = this.listeners.filter(listener => !listener.once && !listener.off);
     }
 }

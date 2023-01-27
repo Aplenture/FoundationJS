@@ -56,7 +56,7 @@ describe("Event", () => {
         expect(counter).equals(0);
     });
 
-    it("calls any sender", () => {
+    it("calls every sender", () => {
         let counter = 0;
 
         const evnt = new Event<any, any>();
@@ -69,16 +69,31 @@ describe("Event", () => {
         expect(counter).equals(2);
     });
 
-    it("calls specific sender", () => {
+    it("calls equal sender only", () => {
         let counter = 0;
 
         const evnt = new Event<any, any>();
 
-        evnt.on(() => counter++, 1);
+        evnt.on(() => counter++, { sender: 1 });
 
         evnt.emit(1, "hello world");
         evnt.emit(2, "hello world");
 
         expect(counter).equals(1);
+    });
+
+    it("calls equal args only", () => {
+        let counter = 0;
+
+        const evnt = new Event<any, any>();
+
+        evnt.on(() => counter++, { args: 1 });
+
+        evnt.emit(this, 1);
+        evnt.emit(this, 2);
+        evnt.emit(1, 1);
+        evnt.emit(1, 2);
+
+        expect(counter).equals(2);
     });
 });
