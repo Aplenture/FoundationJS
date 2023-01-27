@@ -16,6 +16,22 @@ describe("Singleton", () => {
         expect(singleton.instance.get(1)).equals(2);
         expect(singleton.instance.get(2)).equals(3);
     });
+    
+    it("emits instantiation once", () => {
+        const singleton = new Singleton(TestClass, 1, 2, 3);
+        
+        let counter = 0;
+        let emittedInstance: TestClass | null = null;
+        
+        Singleton.onInstantiated.on(() => counter++);
+        Singleton.onInstantiated.on(instance => emittedInstance = instance);
+
+        singleton.instance;
+        singleton.instance;
+
+        expect(singleton.instance).equals(emittedInstance);
+        expect(counter).equals(1);
+    });
 });
 
 class TestClass {
