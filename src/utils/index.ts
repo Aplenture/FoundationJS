@@ -7,4 +7,4 @@ export * from "./property";
 export * from "./randomizer";
 export * from "./singleton";
 export * from "./stopwatch";
-export * from "./translator";
+export * from "./localization";
