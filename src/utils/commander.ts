@@ -16,7 +16,7 @@ export class Commander {
         this.addCommand(COMMAND_HELP, Help, { commands: this._commands });
     }
 
-    protected get commands(): NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>> { return this._commands; }
+    public get commands(): NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>> { return this._commands; }
 
     public addCommand<TContext, TArgs, TRes>(command: string, _constructor: new (...args: any[]) => Command<TContext, TArgs, TRes>, ...args: any[]) {
         this._commands[command.toLowerCase()] = new Singleton(_constructor, ...args);
@@ -59,7 +59,7 @@ export class Commander {
         return !!this._commands[name.toLowerCase()];
     }
 
-    protected getCommand<T extends Command<any, any, any>>(name: string): T {
+    public getCommand<T extends Command<any, any, any>>(name: string): T {
         return this._commands[name.toLowerCase()].instance as T;
     }
 }
