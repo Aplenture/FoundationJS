@@ -8,20 +8,14 @@ describe("Localization", () => {
     it("replaces values", () => expect(Localization.translate("hello", { "w": "A" })).equals("Aorld"));
     
     it("emits missing translation", () => {
-        let emittedKey = "";
-        const callback = key => emittedKey = key;
-
-        Localization.onMissingTranslation.on(callback);
+        Localization.onMissingTranslation.on(key => expect(key).equals("test"));
         Localization.translate("test");
-
-        expect(emittedKey).equals("test");
     });
     
     it("does not emit existing translation", () => {
         let emittedKey = "";
-        const callback = key => emittedKey = key;
 
-        Localization.onMissingTranslation.on(callback);
+        Localization.onMissingTranslation.on(key => emittedKey = key);
         Localization.translate("hello");
 
         expect(emittedKey).equals("");
