@@ -1,9 +1,9 @@
-export abstract class Localization {
-    private static dictionary: NodeJS.ReadOnlyDict<string>;
+import { Event } from "./event";
 
-    public static init(dictionary: NodeJS.ReadOnlyDict<string>) {
-        this.dictionary = dictionary;
-    }
+export abstract class Localization {
+    public static readonly onMissingTranslation = new Event<Localization, string>();
+
+    public static dictionary: NodeJS.ReadOnlyDict<string> = {}
 
     public static translate(key = '', values: NodeJS.ReadOnlyDict<string> = {}): string {
         if (!key)
@@ -12,7 +12,7 @@ export abstract class Localization {
         let result = this.dictionary[key];
 
         if (!result) {
-            console.warn(`Unknown translation for '${key}'.`);
+            this.onMissingTranslation.emit(this, key);
             return key;
         }
 
