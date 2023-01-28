@@ -34,6 +34,7 @@ export class Help extends Command<void, Context, Args, string> {
             result += commands
                 .map(command => `${command}${' '.repeat(maxCommandNameLength - command.length)} - ${this.context.commands[command].instance.description}`)
                 .join('\n');
+            result += '\n';
         }
 
         return result;
