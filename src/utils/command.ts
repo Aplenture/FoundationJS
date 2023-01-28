@@ -1,11 +1,11 @@
 import { Event } from "./event";
-import { Property } from "./property";
+import { DictionaryProperty } from "../properties";
 
 export abstract class Command<TConfig, TContext, TArgs extends NodeJS.ReadOnlyDict<any>, TRes> {
     public static readonly onMessage = new Event<Command<any, any, any, any>, string>();
 
     public abstract readonly description: string;
-    public abstract readonly property?: Property<TArgs>;
+    public abstract readonly property?: DictionaryProperty<TArgs>;
 
     constructor(
         public readonly config: TConfig,
