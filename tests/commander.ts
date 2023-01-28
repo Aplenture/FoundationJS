@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { Commander } from "../src/utils/commander";
 
-describe.only("Commander", () => {
+describe("Commander", () => {
     const commander = new Commander();
 
     it("executes help", async () => expect(await commander.execute("help")).contains('help'));
