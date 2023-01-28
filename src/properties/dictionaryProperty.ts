@@ -6,7 +6,7 @@ export class DictionaryProperty<T extends NodeJS.ReadOnlyDict<any>> extends Prop
     constructor(name: string, ...properties: readonly Property<any>[]) {
         const maxNameLength = Math.max(...properties.map(property => property.name.length));
 
-        super(name, properties.map(property => '  ' + property.name + ' '.repeat(maxNameLength - property.name.length) + ' - ' + property.description).join("\n"));
+        super(name, properties.map(property => '  ' + property.name + ' '.repeat(maxNameLength - property.name.length) + ' - ' + (property.optional ? '(optional)' : '') + property.description).join("\n"),);
 
         this.properties = properties;
     }

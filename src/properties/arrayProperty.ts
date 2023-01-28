@@ -6,7 +6,7 @@ export class ArrayProperty<T> extends Property<readonly T[]> {
     constructor(name: string, ...properties: readonly Property<T>[]) {
         const maxNameLength = Math.max(...properties.map((_, index) => index.toString().length));
 
-        super(name, properties.map((property, index) => '  ' + index + ' '.repeat(maxNameLength - index.toString().length) + ' - ' + property.description).join("\n"));
+        super(name, properties.map((property, index) => '  ' + index + ' '.repeat(maxNameLength - index.toString().length) + ' - ' + (property.optional ? '(optional)' : '') + property.description).join("\n"),);
 
         this.properties = properties;
     }
