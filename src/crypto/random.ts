@@ -70,14 +70,14 @@ export function shuffle<T>(items: readonly T[], seed = Number(random(4))): T[] {
     return result;
 }
 
-export function randomPassword(blocks: number): string {
+export function randomPassword(blocks = 3, blocksize = 6): string {
     let result = '';
 
     for (let i = 0; i < blocks; ++i) {
         if (result.length)
             result += '-';
 
-        for (let j = 0; j < 4; ++j)
+        for (let j = 0; j < blocksize; ++j)
             result += BASE58[randomRanged(BASE58.length)];
     }
 
