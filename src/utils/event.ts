@@ -1,15 +1,14 @@
-export type EventHandler<TSender, TArgs> = (input: TArgs, sender: TSender) => void;
-
 interface Listener<TSender, TArgs> extends Options<TSender, TArgs> {
     readonly handler: EventHandler<TSender, TArgs>;
+    readonly once?: boolean;
     off?: boolean;
 }
 
 interface Options<TSender, TArgs> {
-    readonly sender?: TSender,
-    readonly args?: TArgs,
-    readonly once?: boolean
+    readonly sender?: TSender;
+    readonly args?: TArgs;
 }
+export type EventHandler<TSender, TArgs> = (input: TArgs, sender: TSender) => void;
 
 export class Event<TSender, TArgs> {
     private listeners: Listener<TSender, TArgs>[] = [];
@@ -17,10 +16,7 @@ export class Event<TSender, TArgs> {
     public get length(): number { return this.listeners.length; }
 
     public on(handler: EventHandler<TSender, TArgs>, options: Options<TSender, TArgs> = {}): void {
-        if (this.listeners.find(listener => listener.handler == handler))
-            return;
-
-        this.listeners.push(Object.assign({ handler }, options));
+        this.listeners.push({ handler, sender: options.sender, args: options.args });
     }
 
     public off(handler: EventHandler<TSender, TArgs>): void {
@@ -32,8 +28,8 @@ export class Event<TSender, TArgs> {
         listener.off = true;
     }
 
-    public once(handler: EventHandler<TSender, TArgs>, sender?: TSender): void {
-        this.on(handler, { sender, once: true });
+    public once(handler: EventHandler<TSender, TArgs>, options: Options<TSender, TArgs> = {}): void {
+        this.listeners.push({ handler, sender: options.sender, args: options.args, once: true });
     }
 
     public emit(sender: TSender, args: TArgs): void {
