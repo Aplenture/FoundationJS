@@ -3,6 +3,8 @@ import { Property } from "../utils";
 
 export class NumberProperty extends Property<number> {
     public parse(data: any): number {
-        return parseToNumber(data);
+        return data
+            ? parseToNumber(data)
+            : 0;
     }
 }

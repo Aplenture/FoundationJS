@@ -1,17 +1,25 @@
-import { StringProperty } from "../properties";
+import { ArrayProperty, DictionaryProperty, StringProperty } from "../properties";
 import { Command, Singleton } from "../utils";
 
 interface Context {
-    readonly commands: NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>>;
+    readonly commands: NodeJS.ReadOnlyDict<Singleton<Command<any, any, any, any>>>;
 }
 
-export class Help extends Command<Context, string, string> {
-    public readonly description = "Lists all commands.";
-    public readonly property = new StringProperty("command", "Type <command name> to get detailed help for specific command.");
+interface Args {
+    readonly _: [string];
+}
 
-    public async execute(filter: string): Promise<string> {
+export class Help extends Command<void, Context, Args, string> {
+    public readonly description = "Lists all commands.";
+    public readonly property = new DictionaryProperty<Args>("",
+        new ArrayProperty("_",
+            new StringProperty("command", "Type <command name> to get detailed help for specific command.")
+        )
+    );
+
+    public async execute(args: Args): Promise<string> {
         const commands = Object.keys(this.context.commands)
-            .filter(command => !filter || command.includes(filter))
+            .filter(command => command.includes(args._[0]))
             .sort((a, b) => a.localeCompare(b));
 
         const maxCommandNameLength = Math.max(...commands.map(command => command.length));

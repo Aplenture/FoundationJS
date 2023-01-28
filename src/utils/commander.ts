@@ -1,3 +1,4 @@
+import * as yargs from "yargs-parser";
 import { Singleton } from "./singleton";
 import { Command } from "./command";
 import { Event } from "./event";
@@ -10,23 +11,44 @@ export const COMMAND_HELP = 'help';
 export class Commander {
     public static readonly onMessage = new Event<Commander, string>();
 
-    private readonly _commands: NodeJS.Dict<Singleton<Command<any, any, any>>> = {};
+    private readonly _commands: NodeJS.Dict<Singleton<Command<any, any, any, any>>> = {};
 
     constructor() {
-        this.addCommand(COMMAND_HELP, Help, { commands: this._commands });
+        this.addCommand(COMMAND_HELP, Help, null, { commands: this._commands });
     }
 
-    public get commands(): NodeJS.ReadOnlyDict<Singleton<Command<any, any, any>>> { return this._commands; }
+    public get commands(): NodeJS.ReadOnlyDict<Singleton<Command<any, any, any, any>>> { return this._commands; }
 
-    public addCommand<TContext, TArgs, TRes>(command: string, _constructor: new (...args: any[]) => Command<TContext, TArgs, TRes>, ...args: any[]) {
+    public addCommand<TConfig, TContext, TArgs, TRes>(command: string, _constructor: new (...args: any[]) => Command<TConfig, TContext, TArgs, TRes>, ...args: any[]) {
         this._commands[command.toLowerCase()] = new Singleton(_constructor, ...args);
     }
 
-    public async execute<TArgs, TRes>(command: string, args?: TArgs): Promise<TRes> {
+    public execute<TArgs>(command: string, args?: any): Promise<TArgs> {
+        const data = [];
+
+        for (const key in args)
+            data.push('--' + key, args[key]);
+
+        return this.executeCommand(`${command} ${data.join(' ')}`, command, args);
+    }
+
+    public executeLine<TArgs>(commandLine: string): Promise<TArgs> {
+        const args = yargs(commandLine);
+        const command = args._[0] as string || COMMAND_HELP;
+
+        return this.executeCommand(commandLine, command, args);
+    }
+
+    public hasCommand(name: string): boolean {
+        return !!this._commands[name.toLowerCase()];
+    }
+
+    public getCommand<T extends Command<any, any, any, any>>(name: string): T {
+        return this._commands[name.toLowerCase()].instance as T;
+    }
+
+    protected async executeCommand<TRes>(commandLine: string, command: string, args = {}): Promise<TRes> {
         const stopwatch = new Stopwatch();
-        const commandLine = undefined === args
-            ? command
-            : `${command} ${Object.keys(args).map(key => `--${key} ${args[key]}`).join(' ')}`;
 
         command = command.toLowerCase();
 
@@ -38,7 +60,7 @@ export class Commander {
         const instance = this._commands[command].instance;
 
         try {
-            if (instance.property && undefined !== args)
+            if (instance.property)
                 args = instance.property.parse(args);
 
             stopwatch.start();
@@ -53,13 +75,5 @@ export class Commander {
 
             throw error;
         }
-    }
-
-    public hasCommand(name: string): boolean {
-        return !!this._commands[name.toLowerCase()];
-    }
-
-    public getCommand<T extends Command<any, any, any>>(name: string): T {
-        return this._commands[name.toLowerCase()].instance as T;
     }
 }

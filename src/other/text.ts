@@ -10,7 +10,7 @@ const STRING_YES = "yes";
 
 export function parseToTime(value: string | number, key?: string) {
     if (undefined === value)
-        throw new ForbiddenError(`${key}_${ErrorMessage.MissingDate}`);
+        throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingDate);
 
     if (!isNaN(Number(value)))
         value = Number(value);
@@ -18,33 +18,33 @@ export function parseToTime(value: string | number, key?: string) {
     const result = new Date(value).getTime();
 
     if (isNaN(result))
-        throw new ForbiddenError(`${key}_${ErrorMessage.InvalidDate}`);
+        throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.InvalidDate);
 
     return result;
 }
 
 export function parseToString(value: any, key?: string): string {
     if (undefined === value || value === '')
-        throw new ForbiddenError(`${key}_${ErrorMessage.MissingString}`);
+        throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingString);
 
     return value.toString();
 }
 
 export function parseToNumber(value: string | number, key?: string) {
     if (undefined === value)
-        throw new ForbiddenError(`${key}_${ErrorMessage.MissingNumber}`);
+        throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingNumber);
 
     const result = Number(value);
 
     if (isNaN(result))
-        throw new ForbiddenError(`${key}_${ErrorMessage.InvalidNumber}`);
+        throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.InvalidNumber);
 
     return result;
 }
 
 export function parseToBool(value: string | number | boolean, key?: string) {
     if (undefined === value)
-        throw new ForbiddenError(`${key}_${ErrorMessage.MissingBoolean}`);
+        throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingBoolean);
 
     const lowercase = value
         .toString()
