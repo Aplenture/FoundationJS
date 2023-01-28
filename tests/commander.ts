@@ -7,13 +7,13 @@ describe("Commander", () => {
     it("executes help", async () => expect(await commander.execute("help")).contains('help'));
 
     it("executes with arguments", async () => {
-        expect(await commander.execute("help", { _: ['hel'] })).contains('help');
-        expect(await commander.execute("help", { _: ['world'] })).contains('');
+        expect(await commander.execute("help", { command: 'hel' })).contains('help');
+        expect(await commander.execute("help", { command: 'world' })).contains('');
     });
 
     it("executes line", async () => {
         expect(await commander.executeLine("help")).contains('help');
-        expect(await commander.executeLine("help hel")).contains('help');
-        expect(await commander.executeLine("help world")).contains('');
+        expect(await commander.executeLine("help --command hel")).contains('help');
+        expect(await commander.executeLine("help --command world")).contains('');
     });
 });

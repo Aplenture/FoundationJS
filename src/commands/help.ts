@@ -1,4 +1,4 @@
-import { ArrayProperty, DictionaryProperty, StringProperty } from "../properties";
+import { DictionaryProperty, StringProperty } from "../properties";
 import { Command, Singleton } from "../utils";
 
 interface Context {
@@ -6,20 +6,18 @@ interface Context {
 }
 
 interface Args {
-    readonly _: [string];
+    readonly command: string;
 }
 
 export class Help extends Command<void, Context, Args, string> {
     public readonly description = "Lists all commands.";
     public readonly property = new DictionaryProperty<Args>("",
-        new ArrayProperty("_",
-            new StringProperty("filter", "Type <command name> to get detailed help for specific command.", true)
-        )
+        new StringProperty("command", "Name of part of name of command to get detailed help.", true)
     );
 
     public async execute(args: Args): Promise<string> {
         const commands = Object.keys(this.context.commands)
-            .filter(command => command.includes(args._[0]))
+            .filter(command => command.includes(args.command))
             .sort((a, b) => a.localeCompare(b));
 
         const maxCommandNameLength = Math.max(...commands.map(command => command.length));
