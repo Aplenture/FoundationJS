@@ -3,8 +3,9 @@ import { Property } from "../utils";
 
 export class BoolProperty extends Property<boolean> {
     public parse(data: any): boolean {
-        return data
-            ? parseToBool(data)
-            : false;
+        if (!data && this.optional)
+            return false;
+
+        return parseToBool(data, this.name);
     }
 }

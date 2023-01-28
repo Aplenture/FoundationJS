@@ -13,7 +13,7 @@ export class Help extends Command<void, Context, Args, string> {
     public readonly description = "Lists all commands.";
     public readonly property = new DictionaryProperty<Args>("",
         new ArrayProperty("_",
-            new StringProperty("command", "Type <command name> to get detailed help for specific command.")
+            new StringProperty("filter", "Type <command name> to get detailed help for specific command.", true)
         )
     );
 

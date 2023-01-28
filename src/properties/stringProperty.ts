@@ -3,8 +3,9 @@ import { Property } from "../utils";
 
 export class StringProperty extends Property<string> {
     public parse(data: any): string {
-        return data
-            ? parseToString(data)
-            : '';
+        if (!data && this.optional)
+            return '';
+
+        return parseToString(data, this.name);
     }
 }
