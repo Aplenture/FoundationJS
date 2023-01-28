@@ -6,6 +6,8 @@ import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
 import { Help } from "../commands";
 
+const MAX_LENGTH_RESULT = 30;
+
 export const COMMAND_HELP = 'help';
 
 export class Commander {
@@ -67,7 +69,17 @@ export class Commander {
             const result = await instance.execute(args);
             stopwatch.stop();
 
-            Commander.onMessage.emit(this, `commander >> ${commandLine} >> ${result} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
+            let shortResult: string = result.toString();
+
+            const maxResultLength = Math.min(
+                Math.max(0, shortResult.indexOf('\n')),
+                MAX_LENGTH_RESULT
+            );
+
+            if (shortResult.length > maxResultLength)
+                shortResult = shortResult.substring(0, maxResultLength) + '[...]';
+
+            Commander.onMessage.emit(this, `commander >> ${commandLine} >> ${shortResult} (${formatDuration(stopwatch.duration, { seconds: true, milliseconds: true })})`);
 
             return result as TRes;
         } catch (error) {
