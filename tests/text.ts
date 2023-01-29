@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { parseToBool, parseToNumber, parseToString, parseToTime, parseToJSON, toFirstUpperCase } from "../src/other/text"
+import { parseToBool, parseToNumber, parseToString, parseToTime, parseToJSON, toFirstUpperCase, parseArgs } from "../src/other/text"
 
 describe("Text", () => {
     describe("Parse Time", () => {
@@ -48,5 +48,21 @@ describe("Text", () => {
     describe("Upper first case", () => {
         it("parses lower case", () => expect(toFirstUpperCase('hello')).equals('Hello'));
         it("parses upper case", () => expect(toFirstUpperCase('WORLD')).equals('World'));
+    });
+
+    describe("parse args", () => {
+        it("parses single word", () => expect(parseArgs("--hello world")).deep.contains({ hello: 'world' }));
+        it("parses sentence", () => expect(parseArgs("--sentence hello world")).deep.contains({ sentence: 'hello world' }));
+        it("parses true", () => expect(parseArgs("--trueValue")).deep.contains({ trueValue: '1' }));
+        it("parses false", () => expect(parseArgs("--falseValue 0")).deep.contains({ falseValue: '0' }));
+        it("parses array", () => expect(parseArgs("--arrayValue one --arrayValue 2 --arrayValue")).deep.contains({ arrayValue: ['one', '2', '1'] }));
+        it("parses multiple args", () => expect(parseArgs("command --simple hello --text hello world --true --false 0 --array 1 --array 2")).deep.contains({
+            command: '1',
+            simple: 'hello',
+            text: "hello world",
+            true: '1',
+            false: '0',
+            array: ['1', '2']
+        }));
     });
 });

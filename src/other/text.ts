@@ -8,7 +8,7 @@ const STRING_NO = "no";
 const STRING_Y = "y";
 const STRING_YES = "yes";
 
-export function parseToTime(value: string | number, key?: string) {
+export function parseToTime(value: string | number | undefined, key?: string) {
     if (undefined === value)
         throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingDate);
 
@@ -30,7 +30,7 @@ export function parseToString(value: any, key?: string): string {
     return value.toString();
 }
 
-export function parseToNumber(value: string | number, key?: string) {
+export function parseToNumber(value: string | number | undefined, key?: string) {
     if (undefined === value)
         throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingNumber);
 
@@ -42,7 +42,7 @@ export function parseToNumber(value: string | number, key?: string) {
     return result;
 }
 
-export function parseToBool(value: string | number | boolean, key?: string) {
+export function parseToBool(value: string | number | boolean | undefined, key?: string) {
     if (undefined === value)
         throw new ForbiddenError((key ? key + '_' : '') + ErrorMessage.MissingBoolean);
 
@@ -92,4 +92,29 @@ export function decodeString(value: string): string {
 
 export function hexToByte(hex: string, index = 0) {
     return parseInt(hex.substr(index * 2, 2), 16);
+}
+
+export function parseArgs(value: string): NodeJS.ReadOnlyDict<string | readonly string[]> {
+    const result: NodeJS.Dict<string | string[]> = {};
+
+    value.split('--').forEach(str => {
+        if (!str)
+            return;
+
+        if (!/\S/.test(str))
+            return;
+
+        const split = str.split(' ');
+        const key = split[0].replace(/\s+$/, '');
+        const value = split.slice(1).join(' ').replace(/\s+$/, '') || "1";
+
+        if (undefined == result[key])
+            result[key] = value;
+        else if (Array.isArray(result[key]))
+            (result[key] as string[]).push(value);
+        else
+            result[key] = [result[key] as string, value];
+    });
+
+    return result;
 }

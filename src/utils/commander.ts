@@ -1,9 +1,8 @@
-import * as yargs from "yargs-parser";
 import { Singleton } from "./singleton";
 import { Command } from "./command";
 import { Event } from "./event";
 import { Stopwatch } from "./stopwatch";
-import { formatDuration } from "../other";
+import { formatDuration, parseArgs } from "../other";
 import { Help } from "../commands";
 
 const MAX_LENGTH_RESULT = 30;
@@ -35,8 +34,9 @@ export class Commander {
     }
 
     public executeLine<TArgs>(commandLine: string): Promise<TArgs> {
-        const args = yargs(commandLine);
-        const command = args._[0] as string || COMMAND_HELP;
+        const split = commandLine.split(' ');
+        const command = split[0] || COMMAND_HELP;
+        const args = parseArgs(commandLine.substring(command.length));
 
         return this.executeCommand(commandLine, command, args);
     }
