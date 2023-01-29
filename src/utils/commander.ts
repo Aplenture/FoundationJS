@@ -1,11 +1,10 @@
+import * as yargs from "yargs-parser";
 import { Singleton } from "./singleton";
 import { Command } from "./command";
 import { Event } from "./event";
 import { Stopwatch } from "./stopwatch";
 import { formatDuration } from "../other";
 import { Help } from "../commands";
-
-const yargs = require('yargs-parser');
 
 const MAX_LENGTH_RESULT = 30;
 
